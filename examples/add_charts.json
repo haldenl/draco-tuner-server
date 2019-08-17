@@ -1,0 +1,14 @@
+{
+  "charts": [
+    {
+      "vegalite": {},
+      "draco": {},
+      "valid": 0
+    },
+    {
+      "vegalite": {},
+      "draco": {},
+      "valid": 1
+    }
+  ]
+}
