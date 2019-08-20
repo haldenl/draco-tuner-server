@@ -74,7 +74,7 @@ WHERE p.left_chart_id = c1.chart_id AND p.right_chart_id = c2.chart_id`,
     );
   }
 
-  addCharts(charts: ChartObject[], onSuccess: () => void, onFailure: (err: any) => void) {
+  addCharts(charts: ChartObject[], onSuccess: (rows) => void, onFailure: (err: any) => void) {
     this.readyCheck();
 
     const placeholders = charts.map((_: any) => '(?, ?, ?)');
@@ -93,7 +93,13 @@ vegalite, draco, valid
         if (err) {
           onFailure(err);
         } else {
-          onSuccess();
+          this.db.all(`SELECT chart_id FROM charts ORDER BY chart_id DESC LIMIT ${charts.length}`, (err, rows) => {
+            if (err) {
+              onFailure(err);
+            } else {
+              onSuccess(rows);
+            }
+          });
         }
       }
     );
@@ -121,7 +127,7 @@ vegalite, draco, valid
     });
   }
 
-  addPairs(pairs: PairObject[], onSuccess: () => void, onFailure: (err: any) => void) {
+  addPairs(pairs: PairObject[], onSuccess: (rows) => void, onFailure: (err: any) => void) {
     this.readyCheck();
 
     const placeholders = pairs.map((_: any) => '(?, ?, ?)');
@@ -140,7 +146,13 @@ vegalite, draco, valid
         if (err) {
           onFailure(err);
         } else {
-          onSuccess();
+          this.db.all(`SELECT pair_id FROM pairs ORDER BY chart_id DESC LIMIT ${pairs.length}`, (err, rows) => {
+            if (err) {
+              onFailure(err);
+            } else {
+              onSuccess(rows);
+            }
+          });
         }
       }
     );

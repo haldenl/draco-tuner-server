@@ -72,6 +72,14 @@ app.post('/charts/update', (req, res) => {
 app.post('/pairs/add', (req, res) => {
     const pairs = req.body.pairs;
     console.log(pairs);
+    db.updatePairs(pairs, () => {
+        console.log('Updated charts: ', pairs);
+        res.send({
+            updated: pairs,
+        });
+    }, err => {
+        console.log(err);
+    });
 });
 app.listen(port, () => console.log(`Listening on port ${port}.`));
 //# sourceMappingURL=server.js.map

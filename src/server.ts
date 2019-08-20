@@ -70,11 +70,11 @@ app.post('/charts/add', (req, res) => {
   console.log(charts);
   db.addCharts(
     charts,
-    () => {
-      console.log('Added charts: ', charts);
+    ids => {
+      console.log('Added charts: ', ids);
 
       res.send({
-        added: charts,
+        added: ids,
       });
     },
     err => {
@@ -85,15 +85,15 @@ app.post('/charts/add', (req, res) => {
 
 app.post('/charts/update', (req, res) => {
   const charts = req.body.charts;
+  const ids = charts.map(c => c.chart_id);
 
-  console.log(charts);
   db.updateCharts(
     charts,
     () => {
-      console.log('Updated charts: ', charts);
+      console.log('Updated charts: ', ids);
 
       res.send({
-        updated: charts,
+        updated: ids,
       });
     },
     err => {
@@ -106,13 +106,34 @@ app.post('/pairs/add', (req, res) => {
   const pairs = req.body.pairs;
   console.log(pairs);
 
+  db.addPairs(
+    pairs,
+    ids => {
+      console.log('Updated pairs: ', ids);
+
+      res.send({
+        updated: ids,
+      });
+    },
+    err => {
+      console.log(err);
+    }
+  );
+});
+
+app.post('/pairs/update', (req, res) => {
+  const pairs = req.body.pairs;
+
+  const ids = pairs.map(p => p.pair_id);
+
+  console.log(pairs);
   db.updatePairs(
     pairs,
     () => {
-      console.log('Updated charts: ', pairs);
+      console.log('Updated pairs: ', ids);
 
       res.send({
-        updated: pairs,
+        updated: ids,
       });
     },
     err => {
