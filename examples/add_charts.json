@@ -1,12 +1,136 @@
 {
   "charts": [
     {
-      "vegalite": {},
+      "vegalite": {
+        "mark": "point",
+        "encoding": {
+          "x": {
+            "type": "temporal",
+            "field": "Date",
+            "bin": false
+          },
+          "size": {
+            "type": "quantitative",
+            "field": "GDP",
+            "bin": true
+          },
+          "color": {
+            "type": "quantitative",
+            "aggregate": "count"
+          }
+        },
+        "data": {
+          "values": [
+            {
+              "Date": "Sun Mar 07 1971 12:15:20 GMT-0800 (Pacific Standard Time)",
+              "GDP": 50.241
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 5.125
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 69.77
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 94.9278
+            },
+            {
+              "Date": "Sun Mar 07 1971 12:15:20 GMT-0800 (Pacific Standard Time)",
+              "GDP": 33.5598
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 77.4903
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 59.0942
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 26.79
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 40.814
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 33.9526
+            }
+          ]
+        }
+      },
       "draco": {},
       "valid": 0
     },
     {
-      "vegalite": {},
+      "vegalite": {
+        "mark": "point",
+        "encoding": {
+          "x": {
+            "type": "temporal",
+            "field": "Date",
+            "bin": false
+          },
+          "size": {
+            "type": "quantitative",
+            "field": "GDP",
+            "bin": true
+          },
+          "color": {
+            "type": "quantitative",
+            "aggregate": "count"
+          }
+        },
+        "data": {
+          "values": [
+            {
+              "Date": "Sun Mar 07 1971 12:15:20 GMT-0800 (Pacific Standard Time)",
+              "GDP": 50.241
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 5.125
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 69.77
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 94.9278
+            },
+            {
+              "Date": "Sun Mar 07 1971 12:15:20 GMT-0800 (Pacific Standard Time)",
+              "GDP": 33.5598
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 77.4903
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 59.0942
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 26.79
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 40.814
+            },
+            {
+              "Date": "Fri Aug 21 1970 07:12:03 GMT-0700 (Pacific Daylight Time)",
+              "GDP": 33.9526
+            }
+          ]
+        }
+      },
       "draco": {},
       "valid": 1
     }

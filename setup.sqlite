@@ -6,7 +6,7 @@ CREATE TABLE charts
   chart_id integer PRIMARY KEY AUTOINCREMENT,
   vegalite text NOT NULL,
   draco text NOT NULL,
-  valid integer NOT NULL
+  valid integer
 );
 
 CREATE TABLE pairs
@@ -14,7 +14,7 @@ CREATE TABLE pairs
   pair_id integer PRIMARY KEY AUTOINCREMENT,
   left_chart_id integer NOT NULL,
   right_chart_id integer NOT NULL,
-  comparator text NOT NULL,
+  comparator text,
   FOREIGN KEY (left_chart_id) REFERENCES charts(chart_id),
   FOREIGN KEY (right_chart_id) REFERENCES charts(chart_id)
 );

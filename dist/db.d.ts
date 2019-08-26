@@ -8,9 +8,10 @@ export default class DracoDB {
     numPairs(onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
     getCharts(onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
     getPairs(onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
-    addCharts(charts: ChartObject[], onSuccess: () => void, onFailure: (err: any) => void): void;
+    addCharts(charts: ChartObject[], onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
     updateCharts(charts: ChartObject[], onSuccess: () => void, onFailure: (err: any) => void): void;
-    addPairs(pairs: PairObject[], onSuccess: () => void, onFailure: (err: any) => void): void;
+    addPairs(pairs: PairObject[], onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
     updatePairs(pairs: PairObject[], onSuccess: () => void, onFailure: (err: any) => void): void;
+    getNextUnlabeledPair(num: number, onSuccess: (rows: any) => void, onFailure: (err: any) => void): void;
     private readyCheck;
 }

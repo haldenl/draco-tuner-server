@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as sqlite3 from 'sqlite3';
 import { Chart, ChartObject } from './model/chart';
 import { Pair, PairObject } from './model/pairs';
@@ -17,6 +18,28 @@ export default class DracoDB {
 
       this.ready = true;
     });
+  }
+
+  writePairLabels(path: string, onSuccess: () => void, onFailure: (err: any) => void) {
+    this.readyCheck();
+
+    this.getPairs(rows => {
+      const labels = rows.reduce((dict, pair) => {
+        if (pair.comparator) {
+          dict[pair.pair_id] = pair.comparator;
+        }
+
+        return dict;
+      }, {});
+
+      fs.writeFile(path, JSON.stringify(labels), (err: any) => {
+        if (err) {
+          onFailure(err);
+        } else {
+          onSuccess();
+        }
+      });
+    }, onFailure);
   }
 
   numCharts(onSuccess: (rows: any) => void, onFailure: (err: any) => void) {
@@ -68,7 +91,8 @@ WHERE p.left_chart_id = c1.chart_id AND p.right_chart_id = c2.chart_id`,
         if (err) {
           onFailure(err);
         } else {
-          onSuccess(rows);
+          const pairs = rows.map(row => Pair.getFilledPairObjectFromDb(row));
+          onSuccess(pairs);
         }
       }
     );
@@ -116,8 +140,6 @@ vegalite, draco, valid
 
     const query = queries.join('\n');
 
-    console.log(query);
-
     this.db.run(query, [], err => {
       if (err) {
         onFailure(err);
@@ -146,7 +168,7 @@ vegalite, draco, valid
         if (err) {
           onFailure(err);
         } else {
-          this.db.all(`SELECT pair_id FROM pairs ORDER BY chart_id DESC LIMIT ${pairs.length}`, (err, rows) => {
+          this.db.all(`SELECT pair_id FROM pairs ORDER BY pair_id DESC LIMIT ${pairs.length}`, (err, rows) => {
             if (err) {
               onFailure(err);
             } else {
@@ -162,22 +184,30 @@ vegalite, draco, valid
     this.readyCheck();
 
     const queries = pairs.map(p => {
-      return `UPDATE charts SET left_chart_id = "${JSON.stringify(
-        p.left_chart_id
-      )}", right_chart_id = "${JSON.stringify(p.right_chart_id)}", comparator = ${p.comparator} WHERE pair_id = ${
-        p.pair_id
-      };`;
+      return `UPDATE pairs SET left_chart_id = ${JSON.stringify(p.left_chart_id)}, right_chart_id = ${JSON.stringify(
+        p.right_chart_id
+      )}, comparator = "${p.comparator}" WHERE pair_id = ${p.pair_id};`;
     });
 
     const query = queries.join('\n');
-
-    console.log(query);
 
     this.db.run(query, [], err => {
       if (err) {
         onFailure(err);
       } else {
         onSuccess();
+      }
+    });
+  }
+
+  getNextUnlabeledPair(num: number, onSuccess: (rows) => void, onFailure: (err: any) => void) {
+    this.readyCheck();
+
+    this.db.all(`SELECT pair_id FROM pairs WHERE comparator IS NULL ORDER BY pair_id LIMIT ${num}`, (err, rows) => {
+      if (err) {
+        onFailure(err);
+      } else {
+        onSuccess(rows);
       }
     });
   }

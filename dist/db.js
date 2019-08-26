@@ -58,7 +58,8 @@ WHERE p.left_chart_id = c1.chart_id AND p.right_chart_id = c2.chart_id`, (err, r
                 onFailure(err);
             }
             else {
-                onSuccess(rows);
+                const pairs = rows.map(row => pairs_1.Pair.getFilledPairObjectFromDb(row));
+                onSuccess(pairs);
             }
         });
     }
@@ -77,7 +78,14 @@ vegalite, draco, valid
                 onFailure(err);
             }
             else {
-                onSuccess();
+                this.db.all(`SELECT chart_id FROM charts ORDER BY chart_id DESC LIMIT ${charts.length}`, (err, rows) => {
+                    if (err) {
+                        onFailure(err);
+                    }
+                    else {
+                        onSuccess(rows);
+                    }
+                });
             }
         });
     }
@@ -87,7 +95,6 @@ vegalite, draco, valid
             return `UPDATE charts SET vegalite = "${JSON.stringify(c.vegalite)}", draco = "${JSON.stringify(c.draco)}", valid = ${c.valid ? 1 : 0} WHERE chart_id = ${c.chart_id};`;
         });
         const query = queries.join('\n');
-        console.log(query);
         this.db.run(query, [], err => {
             if (err) {
                 onFailure(err);
@@ -112,23 +119,40 @@ vegalite, draco, valid
                 onFailure(err);
             }
             else {
-                onSuccess();
+                this.db.all(`SELECT pair_id FROM pairs ORDER BY pair_id DESC LIMIT ${pairs.length}`, (err, rows) => {
+                    if (err) {
+                        onFailure(err);
+                    }
+                    else {
+                        onSuccess(rows);
+                    }
+                });
             }
         });
     }
     updatePairs(pairs, onSuccess, onFailure) {
         this.readyCheck();
         const queries = pairs.map(p => {
-            return `UPDATE charts SET left_chart_id = "${JSON.stringify(p.left_chart_id)}", right_chart_id = "${JSON.stringify(p.right_chart_id)}", comparator = ${p.comparator} WHERE pair_id = ${p.pair_id};`;
+            return `UPDATE pairs SET left_chart_id = ${JSON.stringify(p.left_chart_id)}, right_chart_id = ${JSON.stringify(p.right_chart_id)}, comparator = "${p.comparator}" WHERE pair_id = ${p.pair_id};`;
         });
         const query = queries.join('\n');
-        console.log(query);
         this.db.run(query, [], err => {
             if (err) {
                 onFailure(err);
             }
             else {
                 onSuccess();
+            }
+        });
+    }
+    getNextUnlabeledPair(num, onSuccess, onFailure) {
+        this.readyCheck();
+        this.db.all(`SELECT pair_id FROM pairs WHERE comparator IS NULL ORDER BY pair_id LIMIT ${num}`, (err, rows) => {
+            if (err) {
+                onFailure(err);
+            }
+            else {
+                onSuccess(rows);
             }
         });
     }

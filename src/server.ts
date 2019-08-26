@@ -5,15 +5,25 @@ import DracoDB from './db';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-const port = 3000;
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+const port = 3333;
 
 const db = new DracoDB(path.resolve(__dirname, '../codar.db'));
+
+app.all('/*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With'
+  );
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST');
+  return next();
+});
 
 app.get('/charts/count', (req, res) => {
   db.numCharts(
     rows => {
-      console.log(rows);
       res.send(rows);
     },
     err => {
@@ -25,7 +35,6 @@ app.get('/charts/count', (req, res) => {
 app.get('/pairs/count', (req, res) => {
   db.numPairs(
     rows => {
-      console.log(rows);
       res.send(rows);
     },
     err => {
@@ -34,12 +43,11 @@ app.get('/pairs/count', (req, res) => {
   );
 });
 
-app.get('/charts/:from-:to', (req, res) => {
+app.get('/charts/get/:from-:to', (req, res) => {
   const { from, to } = req.params;
 
   db.getCharts(
     rows => {
-      console.log(rows);
       const chartsToSend = rows.slice(from, to);
       res.send(chartsToSend);
     },
@@ -49,12 +57,11 @@ app.get('/charts/:from-:to', (req, res) => {
   );
 });
 
-app.get('/pairs/:from-:to', (req, res) => {
+app.get('/pairs/get/:from-:to', (req, res) => {
   const { from, to } = req.params;
 
   db.getPairs(
     rows => {
-      console.log(rows);
       const pairsToSend = rows.slice(from, to);
       res.send(pairsToSend);
     },
@@ -67,7 +74,6 @@ app.get('/pairs/:from-:to', (req, res) => {
 app.post('/charts/add', (req, res) => {
   const charts = req.body.charts;
 
-  console.log(charts);
   db.addCharts(
     charts,
     ids => {
@@ -104,7 +110,6 @@ app.post('/charts/update', (req, res) => {
 
 app.post('/pairs/add', (req, res) => {
   const pairs = req.body.pairs;
-  console.log(pairs);
 
   db.addPairs(
     pairs,
@@ -126,15 +131,52 @@ app.post('/pairs/update', (req, res) => {
 
   const ids = pairs.map(p => p.pair_id);
 
-  console.log(pairs);
   db.updatePairs(
     pairs,
     () => {
       console.log('Updated pairs: ', ids);
 
-      res.send({
-        updated: ids,
-      });
+      db.writePairLabels(
+        path.resolve(__dirname, '../labels.json'),
+        () => {
+          console.log('Wrote labels');
+          res.send({
+            updated: ids,
+          });
+        },
+        err => {
+          console.log(err);
+        }
+      );
+    },
+    err => {
+      console.log(err);
+    }
+  );
+});
+
+app.get('/pairs/next-unlabeled/:num', (req, res) => {
+  const { num } = req.params;
+
+  db.getNextUnlabeledPair(
+    num,
+    rows => {
+      const ids = rows.reduce((set: Set<number>, curr: any) => {
+        set.add(curr.pair_id);
+        return set;
+      }, new Set());
+
+      console.log(ids);
+
+      db.getPairs(
+        pairs => {
+          const unlabeled = pairs.filter(p => ids.has(p.pair_id));
+          res.send(unlabeled);
+        },
+        err => {
+          console.log(err);
+        }
+      );
     },
     err => {
       console.log(err);
